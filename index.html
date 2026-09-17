@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyFood</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #fff;
+      border-radius: 40px;
+      border: 8px solid #1a1a1a;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px 8px;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 20px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
+    }
+
+    .header-menu {
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 700;
+      font-style: italic;
+    }
+
+    .header-logo .icon {
+      font-size: 24px;
+    }
+
+    .header-cart {
+      position: relative;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      background: #1a1a1a;
+      color: white;
+      font-size: 10px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-style: normal;
+    }
+
+    /* Search */
+    .search-bar {
+      margin: 16px 20px;
+      display: flex;
+      align-items: center;
+      background: #f8f8f8;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 12px 16px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .search-bar input {
+      border: none;
+      outline: none;
+      background: transparent;
+      flex: 1;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .search-bar input::placeholder {
+      color: #999;
+    }
+
+    .search-bar .filter-icon {
+      font-size: 18px;
+      color: #666;
+    }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      gap: 10px;
+      padding: 0 20px 16px;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #e0e0e0;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .category-chip:hover {
+      background: #f0f0f0;
+    }
+
+    .category-chip.active {
+      background: #1a1a1a;
+      color: white;
+      border-color: #1a1a1a;
+    }
+
+    /* Section header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 20px 12px;
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .section-header .order-btn {
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    /* Restaurant list - scrollable area */
+    .restaurant-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 16px;
+    }
+
+    .restaurant-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .restaurant-list::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 4px;
+    }
+
+    .restaurant-card {
+      display: flex;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid #f0f0f0;
+      border-radius: 14px;
+      gap: 14px;
+      transition: all 0.2s;
+      animation: fadeIn 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .restaurant-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .restaurant-img {
+      width: 80px;
+      height: 80px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .restaurant-img .placeholder {
+      font-size: 28px;
+    }
+
+    .restaurant-info {
+      flex: 1;
+    }
+
+    .restaurant-info h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .restaurant-info .meta {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .restaurant-info .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f8f8f8;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .restaurant-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 20px;
+    }
+
+    .heart {
+      font-size: 18px;
+      color: #ccc;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .heart:hover {
+      color: #e74c3c;
+    }
+
+    .delivery-info {
+      font-size: 11px;
+      color: #888;
+      text-align: right;
+    }
+
+    .delivery-info .price {
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Load more button */
+    .load-more-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin-top: 4px;
+      background: #f8f8f8;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .load-more-btn:hover {
+      background: #1a1a1a;
+      color: white;
+      border-color: #1a1a1a;
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #e0e0e0;
+      border-top-color: #1a1a1a;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Mini spinner for load more */
+    .mini-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ccc;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .empty .icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    /* Error */
+    .error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #e74c3c;
+      font-size: 14px;
+    }
+
+    .error .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    /* Add Restaurant Form */
+    .add-restaurant-section {
+      display: none;
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .add-restaurant-section.active {
+      display: block;
+    }
+
+    .add-restaurant-section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #f8f8f8;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #1a1a1a;
+      background: #fff;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #1a1a1a;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.85;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .form-message {
+      text-align: center;
+      padding: 10px;
+      margin-top: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fbe9e7;
+      color: #c62828;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      border-top: 1px solid #f0f0f0;
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #999;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: #1a1a1a;
+    }
+
+    .nav-item .icon {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>📶 🔋</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <span class="header-menu">☰</span>
+      <div class="header-logo">
+        <span class="icon">🍴</span>
+        <span>EasyFood</span>
+      </div>
+      <span class="header-cart">
+        🛒
+        <i class="cart-badge">2</i>
+      </span>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" placeholder="Buscar restaurantes" disabled>
+      <span class="filter-icon">⚙️</span>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories" id="categories">
+      <div class="category-chip active" data-category="Todos">🍽️ Todos</div>
+      <div class="category-chip" data-category="Burger">🍔 Burger</div>
+      <div class="category-chip" data-category="Pizza">🍕 Pizza</div>
+      <div class="category-chip" data-category="Sushi">🍣 Sushi</div>
+      <div class="category-chip" data-category="Saudável">🥗 Saudável</div>
+    </div>
+
+    <!-- Section header -->
+    <div class="section-header">
+      <h2>Restaurantes</h2>
+      <span class="order-btn">Ordenar ▾</span>
+    </div>
+
+    <!-- Restaurant list (scrollable) -->
+    <div class="restaurant-list" id="restaurant-list">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Carregando restaurantes...</p>
+      </div>
+    </div>
+
+    <!-- Add Restaurant Form (hidden by default) -->
+    <div class="add-restaurant-section" id="add-restaurant-section">
+      <h2>➕ Cadastrar Restaurante</h2>
+      <form id="add-restaurant-form">
+        <div class="form-group">
+          <label for="restaurant-name">Nome do Restaurante</label>
+          <input type="text" id="restaurant-name" placeholder="Ex: Taco Loco" required>
+        </div>
+        <div class="form-group">
+          <label for="restaurant-category">Categoria</label>
+          <select id="restaurant-category" required>
+            <option value="">Selecione uma categoria</option>
+            <option value="Burger">🍔 Burger</option>
+            <option value="Pizza">🍕 Pizza</option>
+            <option value="Sushi">🍣 Sushi</option>
+            <option value="Saudável">🥗 Saudável</option>
+            <option value="Mexicana">🌮 Mexicana</option>
+            <option value="Brasileira">🍛 Brasileira</option>
+            <option value="Japonesa">🍱 Japonesa</option>
+            <option value="Italiana">🍝 Italiana</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="restaurant-rating">Avaliação (0 a 5)</label>
+          <input type="number" id="restaurant-rating" placeholder="Ex: 4.3" min="0" max="5" step="0.1" required>
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn">Cadastrar Restaurante</button>
+      </form>
+      <div class="form-message" id="form-message"></div>
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active" data-view="home" onclick="switchView('home')">
+        <span class="icon">🏠</span>
+        <span>Início</span>
+      </div>
+      <div class="nav-item" data-view="search" onclick="switchView('home')">
+        <span class="icon">🔍</span>
+        <span>Buscar</span>
+      </div>
+      <div class="nav-item" data-view="add" onclick="switchView('add')">
+        <span class="icon">➕</span>
+        <span>Cadastrar</span>
+      </div>
+      <div class="nav-item" data-view="favorites">
+        <span class="icon">❤️</span>
+        <span>Favoritos</span>
+      </div>
+      <div class="nav-item" data-view="profile">
+        <span class="icon">👤</span>
+        <span>Perfil</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============================================================
+    // EasyFood - Front-end
+    // Consome a API com filtro por categoria e paginação
+    // =============================================================
+
+    const API_URL = "http://localhost:3000/restaurants";
+
+    // Quantos restaurantes exibir por vez
+    const PAGE_SIZE = 3;
+
+    // Estado da aplicação
+    let allRestaurants = [];
+    let filteredRestaurants = [];
+    let selectedCategory = "Todos";
+    let currentPage = 0;
+
+    // Emojis por categoria
+    const categoryEmoji = {
+      "Pizza": "🍕",
+      "Burger": "🍔",
+      "Sushi": "🍣",
+      "Saudável": "🥗"
+    };
+
+    // Preços fixos por restaurante (para não mudar no reload)
+    const deliveryPrices = {};
+
+    function getDeliveryPrice(id) {
+      if (!deliveryPrices[id]) {
+        deliveryPrices[id] = (Math.random() * 5 + 3).toFixed(2).replace(".", ",");
+      }
+      return deliveryPrices[id];
+    }
+
+    // ----- LOADING -----
+
+    function showLoading() {
+      const list = document.getElementById("restaurant-list");
+      list.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando restaurantes...</p>
+        </div>
+      `;
+    }
+
+    // ----- FETCH -----
+
+    async function fetchRestaurants() {
+      showLoading();
+
+      try {
+        const response = await fetch(API_URL);
+        const restaurants = await response.json();
+        allRestaurants = restaurants;
+
+        setTimeout(() => {
+          filterAndRender();
+        }, 500);
+
+      } catch (error) {
+        showError();
+      }
+    }
+
+    // ----- FILTRO + PAGINAÇÃO -----
+
+    function filterAndRender() {
+      showLoading();
+
+      setTimeout(() => {
+        // Filtra pela categoria
+        if (selectedCategory === "Todos") {
+          filteredRestaurants = [...allRestaurants];
+        } else {
+          filteredRestaurants = allRestaurants.filter(r => r.category === selectedCategory);
+        }
+
+        // Reseta a página
+        currentPage = 0;
+
+        // Renderiza a primeira página
+        renderPage();
+      }, 300);
+    }
+
+    function renderPage() {
+      const list = document.getElementById("restaurant-list");
+      const start = 0;
+      const end = (currentPage + 1) * PAGE_SIZE;
+      const visible = filteredRestaurants.slice(start, end);
+      const hasMore = end < filteredRestaurants.length;
+
+      if (visible.length === 0) {
+        list.innerHTML = `
+          <div class="empty">
+            <div class="icon">🔍</div>
+            <p>Nenhum restaurante encontrado<br>nessa categoria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Monta os cards
+      let html = visible.map((restaurant, index) => `
+        <div class="restaurant-card" style="animation-delay: ${index * 0.05}s">
+          <div class="restaurant-img">
+            <span class="placeholder">${categoryEmoji[restaurant.category] || "🏪"}</span>
+          </div>
+          <div class="restaurant-info">
+            <h3>${restaurant.name}</h3>
+            <div class="meta">${restaurant.category} • 20-30 min</div>
+            <div class="rating">★ ${restaurant.rating}</div>
+          </div>
+          <div class="restaurant-right">
+            <span class="heart">♡</span>
+            <div class="delivery-info">
+              Entrega<br>
+              <span class="price">R$ ${getDeliveryPrice(restaurant.id)}</span>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      // Botão "Carregar mais" se tiver mais resultados
+      if (hasMore) {
+        const remaining = filteredRestaurants.length - end;
+        html += `
+          <button class="load-more-btn" id="load-more-btn" onclick="loadMore()">
+            Carregar mais (${remaining} restante${remaining > 1 ? "s" : ""})
+          </button>
+        `;
+      }
+
+      list.innerHTML = html;
+    }
+
+    // ----- CARREGAR MAIS -----
+
+    function loadMore() {
+      const btn = document.getElementById("load-more-btn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="mini-spinner"></span> Carregando...';
+
+      setTimeout(() => {
+        currentPage++;
+        renderPage();
+
+        // Scroll suave até o final da lista
+        const list = document.getElementById("restaurant-list");
+        list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
+      }, 400);
+    }
+
+    // ----- ERRO -----
+
+    function showError() {
+      const list = document.getElementById("restaurant-list");
+      list.innerHTML = `
+        <div class="error">
+          <div class="icon">⚠️</div>
+          <p><strong>Servidor offline</strong></p>
+          <p style="margin-top:8px; color:#999;">
+            Rode no terminal:<br>
+            <code>node server.js</code>
+          </p>
+        </div>
+      `;
+    }
+
+    // ----- EVENTOS DOS FILTROS -----
+
+    const chips = document.querySelectorAll(".category-chip");
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        chips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        selectedCategory = chip.dataset.category;
+        filterAndRender();
+      });
+    });
+
+    // ----- INICIALIZA -----
+
+    fetchRestaurants();
+
+    // =============================================================
+    // Navegação entre views (Home / Cadastrar)
+    // =============================================================
+
+    function switchView(view) {
+      const homeElements = document.querySelectorAll('.search-bar, .categories, .section-header, .restaurant-list');
+      const addSection = document.getElementById('add-restaurant-section');
+      const navItems = document.querySelectorAll('.nav-item');
+
+      if (view === 'add') {
+        homeElements.forEach(el => el.style.display = 'none');
+        addSection.classList.add('active');
+      } else {
+        homeElements.forEach(el => el.style.display = '');
+        addSection.classList.remove('active');
+      }
+
+      // Atualiza nav ativo
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.view === view) {
+          item.classList.add('active');
+        }
+      });
+    }
+
+    // =============================================================
+    // Cadastro de Restaurante - POST /restaurants
+    // =============================================================
+
+    const addForm = document.getElementById('add-restaurant-form');
+    const formMessage = document.getElementById('form-message');
+
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('restaurant-name').value.trim();
+      const category = document.getElementById('restaurant-category').value;
+      const rating = parseFloat(document.getElementById('restaurant-rating').value);
+
+      if (!name || !category || isNaN(rating)) {
+        showFormMessage('Preencha todos os campos corretamente.', 'error');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Cadastrando...';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, category, rating })
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao cadastrar restaurante');
+        }
+
+        const newRestaurant = await response.json();
+        showFormMessage(`✅ "${newRestaurant.name}" cadastrado com sucesso!`, 'success');
+
+        // Limpa o formulário
+        addForm.reset();
+
+        // Atualiza a lista de restaurantes
+        allRestaurants.push(newRestaurant);
+        filterAndRender();
+
+      } catch (error) {
+        showFormMessage('❌ Erro ao cadastrar. Verifique se o servidor está rodando.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Cadastrar Restaurante';
+      }
+    });
+
+    function showFormMessage(text, type) {
+      formMessage.textContent = text;
+      formMessage.className = 'form-message ' + type;
+      setTimeout(() => {
+        formMessage.className = 'form-message';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

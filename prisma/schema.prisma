@@ -23,3 +23,10 @@ model User {
   email    String @unique @db.VarChar(150)
   password String @db.VarChar(255)
 }
+
+model Activity {
+  id        Int      @id @default(autoincrement())
+  action    String   @db.VarChar(100)
+  details   String?
+  createdAt DateTime @default(now())
+}

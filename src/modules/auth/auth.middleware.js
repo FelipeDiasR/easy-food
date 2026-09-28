@@ -18,7 +18,7 @@ function authenticate(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
 
     // Anexa os dados do usuário na requisição
-    req.user = { id: payload.sub, email: payload.email };
+    req.user = { id: payload.sub, name: payload.name, email: payload.email };
 
     next(); // token válido → segue para a rota
   } catch (error) {

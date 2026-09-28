@@ -20,11 +20,10 @@ async function create(req,res) {
   }
 
   try {
-    const restaurant = await restaurantService.createRestaurant({
-      name,
-      category,
-      rating: rating || 0
-    });
+    const restaurant = await restaurantService.createRestaurant(
+      { name, category, rating: rating || 0 },
+      req.user
+    );
 
     res.status(201).json(restaurant);
   } catch (error) {

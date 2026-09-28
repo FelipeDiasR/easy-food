@@ -32,7 +32,7 @@ async function login({ email, password }) {
 
   // Gera o token com o id e email do usuário, válido por 1 dia
   const token = jwt.sign(
-    { sub: user.id, email: user.email },
+    { sub: user.id, name: user.name, email: user.email },
     JWT_SECRET,
     { expiresIn: "1d" }
   );
@@ -40,4 +40,15 @@ async function login({ email, password }) {
   return { token, user: { id: user.id, name: user.name, email: user.email } };
 }
 
-module.exports = { register, login };
+// Busca os dados atualizados do usuário no banco (sem a senha)
+async function getById(id) {
+  const user = await prisma.user.findUnique({ where: { id } });
+
+  if (!user) {
+    return null;
+  }
+
+  return { id: user.id, name: user.name, email: user.email };
+}
+
+module.exports = { register, login, getById };

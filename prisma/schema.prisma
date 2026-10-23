@@ -15,6 +15,7 @@ model Restaurant {
   name     String   @db.VarChar(150)
   category String?  @db.VarChar(100)
   rating   Decimal? @db.Decimal(2, 1)
+  dishes   Dish[]
 }
 
 model User {
@@ -30,3 +31,16 @@ model Activity {
   details   String?
   createdAt DateTime @default(now())
 }
+
+model Dish {
+  id            Int   @id @default(autoincrement())
+  name          String
+  category      String
+  price         Decimal @db.Decimal(10, 2)
+  imageUrl      String
+  description   String
+  restaurantId  Int
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+}
+     

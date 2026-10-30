@@ -15,6 +15,8 @@ model Restaurant {
   name     String   @db.VarChar(150)
   category String?  @db.VarChar(100)
   rating   Decimal? @db.Decimal(2, 1)
+  ownerId  Int
+  owner    User     @relation(fields: [ownerId], references: [id])
   dishes   Dish[]
 }
 
@@ -23,6 +25,7 @@ model User {
   name     String @db.VarChar(150)
   email    String @unique @db.VarChar(150)
   password String @db.VarChar(255)
+  restaurants Restaurant[]
 }
 
 model Activity {

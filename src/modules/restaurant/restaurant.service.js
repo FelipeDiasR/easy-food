@@ -15,7 +15,8 @@ async function createRestaurant(data, user) {
     data: {
       name: data.name,
       category: data.category,
-      rating: data.rating || 0
+      rating: data.rating || 0,
+      ownerId: user.id // ⬅️ grava o dono (quem está logado, vindo do token)
     }
   });
 
@@ -59,7 +60,12 @@ async function createRestaurant(data, user) {
 
   // 3) O restaurante volta independente do resultado das ações acima
   return restaurant;
+
+  // --- Envio de sms função 
 }
+
+
+// --------createrestaurant.event
 
 module.exports = {
   listRestaurants,
